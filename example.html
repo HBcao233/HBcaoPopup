@@ -1,0 +1,71 @@
+<html>
+
+<head>
+  <title>example</title>
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <script src="HBcaoPopup.min.js"></script>
+  <link rel="stylesheet" href="HBcaoPopup.min.css">
+
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn {
+      width: 100px;
+      height: 20px;
+    }
+
+    .popup_title {
+      background-color: green;
+      color: skyblue
+    }
+
+    .popup_content {
+      background-color: red;
+      color: blue;
+    }
+
+    .popup_close_box {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: none;
+    }
+
+    .popup_close_box:hover {
+      background-color: rgba(15, 20, 25, .1);
+    }
+
+    .popup_close {
+      fill: #fff;
+      font-size: 25px;
+    }
+  </style>
+</head>
+
+<body>
+  <button class="btn">弹窗</button>
+
+  <script>
+    $('.btn').click(function (e) {
+      e.stopPropagation()  //必须，否则弹窗打开会离开关闭
+      window.popup.show({
+        content: '<p>操作成功！</p><p>3秒后自动关闭</p>',
+        timeout: 3000,  // 可选，自动关闭时间，单位ms
+        title: '提示',  // 可选，标题文本
+        ifDrag: true,  //可选，是否允许拖拽
+        dragLimit: true,  //可选，是否限制拖拽区域
+        title_class: 'popup_title',  //可选，标题样式，设置后title_color, title_bgcolor无效
+        content_class: 'popup_content',  //可选，内容样式，设置后content_color, content_bgcolor无效
+        close_box_class: 'popup_close_box',  //可选，关闭按钮样式
+        close_class: 'popup_close',  //可选，关闭按钮内svg样式
+      });
+      return false;  //必须，否则弹窗打开会离开关闭
+    })
+  </script>
+</body>
+
+</html>
