@@ -6,6 +6,7 @@ jquery的一个小插件，全局弹窗windo.popup
 
 ```
 <script src="/static/js/HBcaoPopup.min.js"></script>
+<link rel="stylesheet" href="HBcaoPopup.min.css">
 ```
 
 ## 使用
