@@ -70,35 +70,36 @@ var Popup = function (options) {
 
 Popup.prototype = {
   show: function (options) {
-    this.ifDrag = options.ifDrag;
-    this.dragLimit = options.dragLimit;
-    this.$title_text.text(options.title);
-    this.$cont[0].innerHTML = options.content;
-    this.timeout = options.timeout;
-
-    if (!options.title_class) {
-      this.$title_text.css({ color: options.title_color });
-      this.$title_text.css({ 'background-color': options.title_bgcolor });
-    } else {
-      this.$title_text.addClass(options.title_class);
-    }
-
-    if (!options.content_class) {
-      this.$cont.css({ color: options.content_color });
-      this.$cont.css({ 'background-color': options.content_bgcolor });
-    } else {
-      this.$cont.addClass(options.content_class);
-    }
-
-    if (!options.close_class) {
-      this.$close.children().css({ fill: options.close_color });
-      this.$close.children().css({ 'background-color': options.close_bgcolor });
-    } else {
-      this.$close.children().addClass(options.close_class);
-    }
-    this.$close.addClass(options.close_box_class);
-
     this.opts = $.extend({}, this.defaults, this.opts, options);
+
+    this.ifDrag = this.opts.ifDrag;
+    this.dragLimit = this.opts.dragLimit;
+    this.$title_text.text(this.opts.title);
+    this.$cont[0].innerHTML = this.opts.content;
+    this.timeout = this.opts.timeout;
+
+    if (!this.opts.title_class) {
+      this.$title_text.css({ color: this.opts.title_color });
+      this.$title_text.css({ 'background-color': this.opts.title_bgcolor });
+    } else {
+      this.$title_text.addClass(this.opts.title_class);
+    }
+
+    if (!this.opts.content_class) {
+      this.$cont.css({ color: this.opts.content_color });
+      this.$cont.css({ 'background-color': this.opts.content_bgcolor });
+    } else {
+      this.$cont.addClass(this.opts.content_class);
+    }
+
+
+    if (!this.opts.close_class) {
+      this.$close.children().css({ fill: this.opts.close_color });
+      this.$close.children().css({ 'background-color': this.opts.close_bgcolor });
+    } else {
+      this.$close.children().addClass(this.opts.close_class);
+    }
+    this.$close.addClass(this.opts.close_box_class);
 
     this.popbox();
   },
