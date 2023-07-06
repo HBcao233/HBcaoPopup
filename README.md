@@ -15,7 +15,6 @@ jquery的一个小插件，全局弹窗windo.popup
 
 ```javascript
 $('.btn').click(function (e) {
-  e.stopPropagation() //必须，否则弹窗打开会离开关闭
   window.popup.show({
     content: '<p>操作成功！</p><p>3秒后自动关闭</p>',
     timeout: 3000, // 可选，自动关闭时间，单位ms
@@ -27,7 +26,5 @@ $('.btn').click(function (e) {
     close_box_class: 'popup_close_box', //可选，关闭按钮样式
     close_class: 'popup_close', //可选，关闭按钮内svg样式
   });
-  return false; //必须，否则弹窗打开会离开关闭
 })
 ```
-

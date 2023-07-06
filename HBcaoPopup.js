@@ -54,8 +54,8 @@ var Popup = function (options) {
     return false;
   });
 
-  $(document.body).on('click', function () {
-    self.closePopbox();
+  this.$oMask.on('click', function () {
+    if (this.isopen) self.closePopbox();
   });
 
   // 拖拽事件
@@ -121,14 +121,16 @@ Popup.prototype = {
 
   closePopbox: function () { // 关闭弹窗
     var self = this;
-    clearTimeout(this.popup_timer);
     if (this.b_stop) {
+      clearTimeout(this.popup_timer);
       this.$oMask.animate({ opacity: 0 }, function () {
         $(this).hide();
       });;
       this.$elem.animate({ opacity: 0, top: 150 }, function () {
         $(this).hide();
+        this.b_stop = false;
       });
+
     }
   },
 
