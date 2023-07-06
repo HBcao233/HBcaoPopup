@@ -7,14 +7,14 @@ var Popup = function (options) {
   this.page_h = $(window).height();
   this.timeout = options.timeout;
 
-  $('body').append(`<div id="popup_box"><div id="popup"><div class="title"><p></p><div class="close_box"><svg viewBox="0 0 24 24" aria-hidden="true" class="r-18jsvk2 r-4qtqp9 r-yyyyoo r-z80fyv r-dnmrzs r-bnwqim r-1plcrui r-lrvibr r-19wmn03"><g><path d="M10.59 12L4.54 5.96l1.42-1.42L12 10.59l6.04-6.05 1.42 1.42L13.41 12l6.05 6.04-1.42 1.42L12 13.41l-6.04 6.05-1.42-1.42L10.59 12z"></path></g></svg></div></div><div class="cont"></div></div><div id="mask_shadow"></div></div>`);
+  $('body').append(`<div id="popup_box"><div id="popup"><div class="title"><p></p><div class="close_box"><svg viewBox="0 0 24 24" aria-hidden="true"><g><path d="M10.59 12L4.54 5.96l1.42-1.42L12 10.59l6.04-6.05 1.42 1.42L13.41 12l6.05 6.04-1.42 1.42L12 13.41l-6.04 6.05-1.42-1.42L10.59 12z"></path></g></svg></div></div><div class="content"></div></div><div id="mask_shadow"></div></div>`);
   this.$box = $('#popup_box');
   this.$elem = this.$box.find('#popup');
   this.$oMask = this.$box.find('#mask_shadow');
   this.$oTitle = this.$elem.find('.title');
   this.$title_text = this.$oTitle.find('p');
   this.$close = this.$oTitle.find('.close_box');
-  this.$cont = this.$elem.find('.cont');
+  this.$cont = this.$elem.find('.content');
 
   this.$title_text.text(options.title);
   this.$cont[0].innerHTML = options.content;
@@ -31,18 +31,26 @@ var Popup = function (options) {
     content: '',
     title_color: 'white',
     title_bgcolor: 'pink',
-    title_class: '',
     content_color: '#000',
     content_bgcolor: '#EDEDED',
-    content_class: '',
     close_color: '#000',
     close_bgcolor: '',
+
+    popup_css: {},
+    title_css: {},
+    title_box_css: {},
+    content_css: {},
+    close_css: {},
+    close_box_css: {},
+
+    popup_class: '',
+    title_class: '',
+    title_box_class: '',
+    content_class: '',
     close_class: '',
     close_box_class: '',
   };
   this.opts = $.extend({}, this.defaults, options);
-
-  this.$elem.css({ left: (this.page_w - this.$elem.width()) / 2 });
 
   this.$elem.on('click', function () {
     return false;
@@ -50,13 +58,10 @@ var Popup = function (options) {
 
   this.$close.on('click', function () {
     self.closePopbox();
-
     return false;
   });
 
-  this.$oMask.on('click', function () {
-    if (this.isopen) self.closePopbox();
-  });
+  this.$oMask.on('click', () => self.closePopbox());
 
   // 拖拽事件
   this.$oTitle.on('mousedown', function (ev) {
@@ -70,36 +75,58 @@ var Popup = function (options) {
 
 Popup.prototype = {
   show: function (options) {
-    this.opts = $.extend({}, this.defaults, this.opts, options);
+    let self = this;
+    let opts = $.extend({}, this.defaults, this.opts, options);
 
-    this.ifDrag = this.opts.ifDrag;
-    this.dragLimit = this.opts.dragLimit;
-    this.$title_text.text(this.opts.title);
-    this.$cont[0].innerHTML = this.opts.content;
-    this.timeout = this.opts.timeout;
+    this.ifDrag = opts.ifDrag;
+    this.dragLimit = opts.dragLimit;
+    this.$title_text.text(opts.title);
+    this.$cont[0].innerHTML = opts.content;
+    this.timeout = opts.timeout;
 
-    if (!this.opts.title_class) {
-      this.$title_text.css({ color: this.opts.title_color });
-      this.$title_text.css({ 'background-color': this.opts.title_bgcolor });
+    if (!opts.popup_class) {
+      this.$elem.attr('style', '');
+      this.$elem.css(opts.popup_css);
     } else {
-      this.$title_text.addClass(this.opts.title_class);
+      this.$elem.addClass(opts.popup_class);
     }
 
-    if (!this.opts.content_class) {
-      this.$cont.css({ color: this.opts.content_color });
-      this.$cont.css({ 'background-color': this.opts.content_bgcolor });
+    if (!opts.title_class) {
+      this.$title_text.attr('style', '');
+      this.$title_text.css({ color: opts.title_color });
+      this.$title_text.css({ 'background-color': opts.title_bgcolor });
+      this.$title_text.css(opts.title_css);
     } else {
-      this.$cont.addClass(this.opts.content_class);
+      this.$title_text.removeClass();
+      this.$title_text.addClass(opts.title_class);
+    }
+    this.$oTitle.css(opts.title_box_css);
+    this.$oTitle.removeClass();
+    this.$oTitle.addClass(opts.title_box_class + ' title');
+
+    if (!opts.content_class) {
+      this.$cont.attr('style', '');
+      this.$cont.css({ color: opts.content_color });
+      this.$cont.css({ 'background-color': opts.content_bgcolor });
+      this.$cont.css(opts.content_css);
+    } else {
+      this.$cont.removeClass();
+      this.$cont.addClass(opts.content_class + ' content');
     }
 
-
-    if (!this.opts.close_class) {
-      this.$close.children().css({ fill: this.opts.close_color });
-      this.$close.children().css({ 'background-color': this.opts.close_bgcolor });
+    if (!opts.close_class) {
+      this.$close.children().attr('style', '');
+      this.$close.children().css({ fill: opts.close_color });
+      this.$close.children().css({ 'background-color': opts.close_bgcolor });
+      this.$close.children().css(this.opts.close_css);
     } else {
-      this.$close.children().addClass(this.opts.close_class);
+      this.$close.children().removeClass();
+      this.$close.children().addClass(opts.close_class + ' close');
     }
-    this.$close.addClass(this.opts.close_box_class);
+    this.$close.attr('style', '');
+    this.$close.css(opts.close_box_css);
+    this.$close.removeClass();
+    this.$close.addClass(opts.close_box_class + ' close_box');
 
     this.popbox();
   },
@@ -108,7 +135,7 @@ Popup.prototype = {
     var self = this;
 
     this.$oMask.show().animate({ opacity: 1 });
-    this.$elem.show().animate({ opacity: 1, top: 260 }, function () {
+    this.$elem.show().animate({ opacity: 1 }, function () {
       self.b_stop = true;
     });
     if (this.timeout > 0) {
@@ -126,9 +153,9 @@ Popup.prototype = {
       this.$oMask.animate({ opacity: 0 }, function () {
         $(this).hide();
       });;
-      this.$elem.animate({ opacity: 0, top: 150 }, function () {
+      this.$elem.animate({ opacity: 0 }, function () {
         $(this).hide();
-        this.b_stop = false;
+        self.b_stop = false;
       });
 
     }

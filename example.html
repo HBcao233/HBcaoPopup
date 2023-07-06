@@ -17,56 +17,131 @@
     .btn {
       width: 100px;
       height: 20px;
+      margin: 5px 10px;
     }
 
-    .popup_title {
-      background-color: green;
-      color: skyblue
-    }
-
-    .popup_content {
-      background-color: red;
-      color: blue;
-    }
-
-    .popup_close_box {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      border: none;
+    .popup_title:hover {
+      color: yellow;
     }
 
     .popup_close_box:hover {
       background-color: rgba(15, 20, 25, .1);
     }
 
-    .popup_close {
-      fill: #fff;
-      font-size: 25px;
+    .popup2_title_box {
+      display: none;
+      width: 100px;
     }
   </style>
 </head>
 
 <body>
-  <button class="btn">弹窗</button>
+  <div style="display: flex;flex-direction: column;">
+    <button class="btn btn1">弹窗1</button>
+    <button class="btn btn2">弹窗2</button>
+  </div>
 
   <script>
-    $('.btn').click(function (e) {
-      e.stopPropagation()  //必须，否则弹窗打开会离开关闭
+    $('.btn1').click(function (e) {
       window.popup.show({
         content: '<p>操作成功！</p><p>3秒后自动关闭</p>',
-        timeout: 3000,  // 可选，自动关闭时间，单位ms
+        // timeout: 3000,  // 可选，自动关闭时间，单位ms
         title: '提示',  // 可选，标题文本
-        ifDrag: true,  //可选，是否允许拖拽
-        dragLimit: true,  //可选，是否限制拖拽区域
-        title_class: 'popup_title',  //可选，标题样式，设置后title_color, title_bgcolor无效
-        content_class: 'popup_content',  //可选，内容样式，设置后content_color, content_bgcolor无效
-        close_box_class: 'popup_close_box',  //可选，关闭按钮样式
-        close_class: 'popup_close',  //可选，关闭按钮内svg样式
+        ifDrag: true,  // 可选，是否允许拖拽, 默认为true
+        dragLimit: true,  // 可选，是否限制拖拽区域, 默认为true
+
+        popup_css: {}, // 可选，弹窗本体的css
+        title_css: {
+          'background-color': 'green',
+          color: 'skyblue',
+        },  // 可选，标题样式，设置后title_color, title_bgcolor无效
+        title_box_css: {},  // 可选，标题框（包括关闭按钮）样式
+        content_css: {
+          'background-color': 'red',
+          color: 'blue',
+        },  // 可选，内容样式，设置后content_color, content_bgcolor无效
+        close_box_css: {
+          width: '30px',
+          height: '30px',
+          'border-radius': '50%',
+          border: 'none',
+        },  // 可选，关闭按钮样式
+        close_css: {
+          fill: '#fff',
+          'font-size': '25px',
+        },  // 可选，关闭按钮内svg样式
+
+        popup_clss: '',  // 可选，主要用于设置:hover等伪类
+        title_class: 'popup_title',
+        title_box_class: '',
+        content_class: '',
+        close_box_class: 'popup_close_box',
+        close_class: '',
       });
-      return false;  //必须，否则弹窗打开会离开关闭
-    })
+    });
+
+    $('.btn2').click(function (e) {
+      window.popup.show({
+        content: `<div class="title">确定删除？</div>
+        <div class="tip">此操作可在最近删除中撤销。</div>
+        <div class="operation">
+          <div class="btn delete">删除</div>
+          <div class="btn cancel" onclick="javascript:window.popup.closePopbox();">取消</div>
+        </div>`,
+        title: '提示',
+        popup_css: {
+          'width': 'auto',
+          'box-shadow': 'none',
+          'border-radius': '20px',
+          'overflow': 'hidden',
+        },
+        title_box_css: {
+          'display': 'none',
+        },
+        content_css: {
+          'background-color': '#fff',
+        },
+      });
+    });
   </script>
+  <style>
+    .content .title {
+      color: rgb(15, 20, 25);
+      font-weight: 700;
+      line-height: 24px;
+      margin-bottom: 8px;
+    }
+
+    .content .tip {
+      color: rgb(83, 100, 113);
+      font-weight: 400;
+      font-size: 15px;
+      line-height: 20px;
+    }
+
+    .content .operation {
+      margin-top: 20px;
+    }
+
+    .content .operation .btn {
+      width: 220px;
+      font-weight: 700;
+      font-size: 15px;
+      line-height: 20px;
+      padding: 10px 0;
+      border-radius: 25px;
+      text-align: center;
+    }
+
+    .content .operation .btn.delete {
+      color: #fff;
+      background-color: rgb(244, 33, 46);
+    }
+
+    .content .operation .btn.cancel {
+      border: 1px solid rgb(207, 217, 222);
+    }
+  </style>
 </body>
 
 </html>
