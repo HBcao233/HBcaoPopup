@@ -49,6 +49,8 @@ var Popup = function (options) {
     content_class: '',
     close_class: '',
     close_box_class: '',
+
+    onClose: function () { },
   };
   this.opts = $.extend({}, this.defaults, options);
 
@@ -77,6 +79,7 @@ Popup.prototype = {
   show: function (options) {
     let self = this;
     let opts = $.extend({}, this.defaults, this.opts, options);
+    this.onClose = opts.onClose;
 
     this.ifDrag = opts.ifDrag;
     this.dragLimit = opts.dragLimit;
@@ -100,6 +103,7 @@ Popup.prototype = {
       this.$title_text.removeClass();
       this.$title_text.addClass(opts.title_class);
     }
+    this.$oTitle.attr('style', '');
     this.$oTitle.css(opts.title_box_css);
     this.$oTitle.removeClass();
     this.$oTitle.addClass(opts.title_box_class + ' title');
@@ -152,6 +156,7 @@ Popup.prototype = {
       this.$box.animate({ opacity: 0 }, function () {
         $(this).hide();
         self.b_stop = false;
+        self.onClose();
       });
     }
   },
