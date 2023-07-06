@@ -2,19 +2,25 @@ var Popup = function (options) {
   var self = this;
   if (!options) options = {};
 
+  this.id = 'popup_box';
+  if (options.id) this.id = options.id;
+
   this.b_stop = true; // 防止重复点击
   this.page_w = $(window).width();
   this.page_h = $(window).height();
   this.timeout = options.timeout;
 
-  $('body').append(`<div id="popup_box"><div id="popup"><div class="title"><p></p><div class="close_box"><svg viewBox="0 0 24 24" aria-hidden="true"><g><path d="M10.59 12L4.54 5.96l1.42-1.42L12 10.59l6.04-6.05 1.42 1.42L13.41 12l6.05 6.04-1.42 1.42L12 13.41l-6.04 6.05-1.42-1.42L10.59 12z"></path></g></svg></div></div><div class="content"></div></div><div id="mask_shadow"></div></div>`);
-  this.$box = $('#popup_box');
+  $('body').append(`<div id="` + this.id + `" class="popup_box"><div id="popup"><div class="title"><p></p><div class="close_box"><svg viewBox="0 0 24 24" aria-hidden="true"><g><path d="M10.59 12L4.54 5.96l1.42-1.42L12 10.59l6.04-6.05 1.42 1.42L13.41 12l6.05 6.04-1.42 1.42L12 13.41l-6.04 6.05-1.42-1.42L10.59 12z"></path></g></svg></div></div><div class="content"></div></div><div id="mask_shadow"></div></div>`);
+  this.$box = $('#' + this.id);
   this.$elem = this.$box.find('#popup');
   this.$oMask = this.$box.find('#mask_shadow');
   this.$oTitle = this.$elem.find('.title');
   this.$title_text = this.$oTitle.find('p');
   this.$close = this.$oTitle.find('.close_box');
   this.$cont = this.$elem.find('.content');
+
+  this.onShow = function () { };
+  this.onClose = function () { };
 
   this.$title_text.text(options.title);
   this.$cont[0].innerHTML = options.content;
@@ -25,6 +31,7 @@ var Popup = function (options) {
   this.$cont.css({ 'background-color': options.content_bgcolor });
 
   this.defaults = {
+    id: 'popup_box',
     ifDrag: true,
     dragLimit: true,
     title: '提示',
@@ -50,6 +57,7 @@ var Popup = function (options) {
     close_class: '',
     close_box_class: '',
 
+    onShow: function () { },
     onClose: function () { },
   };
   this.opts = $.extend({}, this.defaults, options);
@@ -80,6 +88,7 @@ Popup.prototype = {
     let self = this;
     let opts = $.extend({}, this.defaults, this.opts, options);
     this.onClose = opts.onClose;
+    this.onShow = opts.onShow;
 
     this.ifDrag = opts.ifDrag;
     this.dragLimit = opts.dragLimit;
@@ -140,6 +149,7 @@ Popup.prototype = {
 
     this.$box.css({ display: 'flex' }).animate({ opacity: 1 }, function () {
       self.b_stop = true;
+      self.onShow();
     });
     if (this.timeout > 0) {
       this.popup_timer = setTimeout(function () {
@@ -197,6 +207,7 @@ Popup.prototype = {
 
   constructor: Popup
 };
+window.Popup = Popup;
 
 $(function () {
   window.popup = new Popup();
