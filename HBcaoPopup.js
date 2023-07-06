@@ -134,8 +134,7 @@ Popup.prototype = {
   popbox: function () { // 显示弹窗
     var self = this;
 
-    this.$oMask.show().animate({ opacity: 1 });
-    this.$elem.show().animate({ opacity: 1 }, function () {
+    this.$box.css({ display: 'flex' }).animate({ opacity: 1 }, function () {
       self.b_stop = true;
     });
     if (this.timeout > 0) {
@@ -150,14 +149,10 @@ Popup.prototype = {
     var self = this;
     if (this.b_stop) {
       clearTimeout(this.popup_timer);
-      this.$oMask.animate({ opacity: 0 }, function () {
-        $(this).hide();
-      });;
-      this.$elem.animate({ opacity: 0 }, function () {
+      this.$box.animate({ opacity: 0 }, function () {
         $(this).hide();
         self.b_stop = false;
       });
-
     }
   },
 
