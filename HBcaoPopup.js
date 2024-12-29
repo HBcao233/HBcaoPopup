@@ -1,214 +1,197 @@
-var Popup = function (options) {
-  var self = this;
-  if (!options) options = {};
-
-  this.id = 'popup_box';
-  if (options.id) this.id = options.id;
-
-  this.b_stop = true; // 防止重复点击
-  this.page_w = $(window).width();
-  this.page_h = $(window).height();
-  this.timeout = options.timeout;
-
-  $('body').append(`<div id="` + this.id + `" class="popup_box"><div id="popup"><div class="title"><p></p><div class="close_box"><svg viewBox="0 0 24 24" aria-hidden="true"><g><path d="M10.59 12L4.54 5.96l1.42-1.42L12 10.59l6.04-6.05 1.42 1.42L13.41 12l6.05 6.04-1.42 1.42L12 13.41l-6.04 6.05-1.42-1.42L10.59 12z"></path></g></svg></div></div><div class="content"></div></div><div id="mask_shadow"></div></div>`);
-  this.$box = $('#' + this.id);
-  this.$elem = this.$box.find('#popup');
-  this.$oMask = this.$box.find('#mask_shadow');
-  this.$oTitle = this.$elem.find('.title');
-  this.$title_text = this.$oTitle.find('p');
-  this.$close = this.$oTitle.find('.close_box');
-  this.$cont = this.$elem.find('.content');
-
-  this.onShow = function () { };
-  this.onClose = function () { };
-
-  this.$title_text.text(options.title);
-  this.$cont[0].innerHTML = options.content;
-
-  this.$title_text.css({ color: options.title_color });
-  this.$title_text.css({ 'background-color': options.title_bgcolor });
-  this.$cont.css({ color: options.content_color });
-  this.$cont.css({ 'background-color': options.content_bgcolor });
-
-  this.defaults = {
-    id: 'popup_box',
-    ifDrag: true,
-    dragLimit: true,
-    title: '提示',
-    content: '',
-    title_color: 'white',
-    title_bgcolor: 'pink',
-    content_color: '#000',
-    content_bgcolor: '#EDEDED',
-    close_color: '#000',
-    close_bgcolor: '',
-
-    popup_css: {},
-    title_css: {},
-    title_box_css: {},
-    content_css: {},
-    close_css: {},
-    close_box_css: {},
-
-    popup_class: '',
-    title_class: '',
-    title_box_class: '',
-    content_class: '',
-    close_class: '',
-    close_box_class: '',
-
-    onShow: function () { },
-    onClose: function () { },
-  };
-  this.opts = $.extend({}, this.defaults, options);
-
-  this.$elem.on('click', function () {
-    return false;
-  });
-
-  this.$close.on('click', function () {
-    self.closePopbox();
-    return false;
-  });
-
-  this.$oMask.on('click', () => self.closePopbox());
-
-  // 拖拽事件
-  this.$oTitle.on('mousedown', function (ev) {
-    if (self.opts.ifDrag) {
-      self.drag(ev);
-    }
-
-    return false;
-  });
-};
-
-Popup.prototype = {
-  show: function (options) {
-    let self = this;
-    let opts = $.extend({}, this.defaults, this.opts, options);
-    this.onClose = opts.onClose;
-    this.onShow = opts.onShow;
-
-    this.ifDrag = opts.ifDrag;
-    this.dragLimit = opts.dragLimit;
-    this.$title_text.text(opts.title);
-    this.$cont[0].innerHTML = opts.content;
-    this.timeout = opts.timeout;
-
-    if (!opts.popup_class) {
-      this.$elem.attr('style', '');
-      this.$elem.css(opts.popup_css);
+(function () {
+  const isNumber = s => Object.prototype.toString.call(s) === "[object Number]";
+  const isString = s => Object.prototype.toString.call(s) === "[object String]";
+  const isArrayLike = s => s != null && typeof s[Symbol.iterator] === 'function';
+  /**
+   * 创建 Element
+   * @param {String} tagName 
+   * @param {Object} options 
+   * @param {function} func 
+   * @returns {HTMLElement | SVGElement}
+   */
+  function tag(tagName, options, func) {
+    options = options || {};
+    var svgTags = ['svg', 'g', 'path', 'filter', 'animate', 'marker', 'line', 'polyline', 'rect', 'circle', 'ellipse', 'polygon'];
+    let newElement;
+    if (svgTags.indexOf(tagName) >= 0) {
+      newElement = document.createElementNS("http://www.w3.org/2000/svg", tagName);
     } else {
-      this.$elem.addClass(opts.popup_class);
+      newElement = document.createElement(tagName);
     }
-
-    if (!opts.title_class) {
-      this.$title_text.attr('style', '');
-      this.$title_text.css({ color: opts.title_color });
-      this.$title_text.css({ 'background-color': opts.title_bgcolor });
-      this.$title_text.css(opts.title_css);
-    } else {
-      this.$title_text.removeClass();
-      this.$title_text.addClass(opts.title_class);
+    if (options.id) newElement.id = options.id;
+    if (options.class) {
+      if (!Array.isArray(options.class)) options.class = options.class.split(' ');
+      for (const e of options.class) {
+        if (e) newElement.classList.add(e);
+      }
     }
-    this.$oTitle.attr('style', '');
-    this.$oTitle.css(opts.title_box_css);
-    this.$oTitle.removeClass();
-    this.$oTitle.addClass(opts.title_box_class + ' title');
-
-    if (!opts.content_class) {
-      this.$cont.attr('style', '');
-      this.$cont.css({ color: opts.content_color });
-      this.$cont.css({ 'background-color': opts.content_bgcolor });
-      this.$cont.css(opts.content_css);
-    } else {
-      this.$cont.removeClass();
-      this.$cont.addClass(opts.content_class + ' content');
+    if (options.innerHTML) newElement.innerHTML = options.innerHTML;
+    if (options.children) {
+      if (!isArrayLike(options.children)) options.children = [options.children];
+      for (const e of options.children) {
+        if (isString(e) || isNumber(e)) e = document.createTextNode(e);
+        newElement.appendChild(e);
+      }
     }
-
-    if (!opts.close_class) {
-      this.$close.children().attr('style', '');
-      this.$close.children().css({ fill: opts.close_color });
-      this.$close.children().css({ 'background-color': opts.close_bgcolor });
-      this.$close.children().css(this.opts.close_css);
-    } else {
-      this.$close.children().removeClass();
-      this.$close.children().addClass(opts.close_class + ' close');
+    if (options.style) newElement.style.cssText = options.style
+    if (options.attrs) {
+      for (const [k, v] of Object.entries(options.attrs)) {
+        newElement.setAttribute(k, v)
+      }
     }
-    this.$close.attr('style', '');
-    this.$close.css(opts.close_box_css);
-    this.$close.removeClass();
-    this.$close.addClass(opts.close_box_class + ' close_box');
+    func && func(newElement)
+    return newElement;
+  }
 
-    this.popbox();
-  },
+  class Popup {
+    #draging = false;
+    #x = 0;
+    #y = 0;
 
-  popbox: function () { // 显示弹窗
-    var self = this;
+    /**
+     * Popup
+     * @param {Object} opt_config
+     * @constructor
+     * @export
+     */
+    constructor(options) {
+      if (!options) options = {};
+      if (options.ifDrag === undefined) options.ifDrag = true;
+      if (options.dragLimit === undefined) options.dragLimit = true;
+      this.options = options;
 
-    this.$box.css({ display: 'flex' }).animate({ opacity: 1 }, function () {
-      self.b_stop = true;
-      self.onShow();
-    });
-    if (this.timeout > 0) {
-      this.popup_timer = setTimeout(function () {
-        self.closePopbox();
-      }, this.timeout);
-    }
 
-  },
+      this.b_stop = true; // 防止重复点击
+      this.timeout = options.timeout;
 
-  closePopbox: function () { // 关闭弹窗
-    var self = this;
-    if (this.b_stop) {
-      clearTimeout(this.popup_timer);
-      this.$box.animate({ opacity: 0 }, function () {
-        $(this).hide();
-        self.b_stop = false;
-        self.onClose();
+      this.dialogElement = tag('dialog', {
+        class: 'popup-box',
+        children: (this.containerElement = tag('div', {
+          class: 'popup',
+          children: [
+            (this.titleBoxElement = tag('div', {
+              class: 'popup-title-box', children: [
+                (this.titleElement = tag('p', { class: 'popup-title' })),
+                (this.closeBtn = tag('div', {
+                  class: 'popup-close-btn', children: (this.closeBtnSvg = tag('svg', {
+                    attrs: {
+                      viewBox: '0 0 24 24',
+                      'aria-hidden': 'true',
+                    }, innerHTML: '<g><path d="M10.59 12L4.54 5.96l1.42-1.42L12 10.59l6.04-6.05 1.42 1.42L13.41 12l6.05 6.04-1.42 1.42L12 13.41l-6.04 6.05-1.42-1.42L10.59 12z"></path></g>'
+                  }))
+                })),
+              ],
+            })),
+            (this.contentElement = tag('div', { class: 'popup-content' })),
+          ]
+        })),
       });
+      document.body.append(this.dialogElement);
+
+      this.titleElement.innerHTML = options.title;
+      this.contentElement.innerHTML = options.content;
+
+      const setStyle = (t, s) => {
+        if (!s) return;
+        t.style = s;
+      }
+      setStyle(this.containerElement, options.style);
+      setStyle(this.titleBoxElement, options.title_box_style);
+      setStyle(this.titleElement, options.title_style);
+      setStyle(this.contentElement, options.content_style);
+      setStyle(this.closeBtn, options.close_btn_style);
+      setStyle(this.closeBtnSvg, options.close_svg_style);
+
+      const addClass = (t, c) => {
+        if (!c) return;
+        if (isString(c)) c = c.split(' ');
+        for (const e of c) {
+          if (e) t.classList.add(e);
+        }
+      }
+      addClass(this.containerElement, options.class);
+      addClass(this.titleBoxElement, options.title_box_class);
+      addClass(this.titleElement, options.title_class);
+      addClass(this.contentElement, options.content_class);
+      addClass(this.closeBtn, options.close_btn_class);
+
+      this.startEventListening();
+      this.addEventListener = this.dialogElement.addEventListener.bind(this.dialogElement);
+      this.appendChild = this.dialogElement.appendChild.bind(this.dialogElement);
+      this.querySelector = this.dialogElement.querySelector.bind(this.dialogElement);
     }
-  },
 
-  drag: function (ev) { // 拖拽事件
-    var self = this;
-    var oEvent = ev || window.event;
-    var disX = oEvent.clientX - this.$elem.offset().left;
-    var disY = oEvent.clientY - this.$elem.offset().top;
-    var _move = true;
+    startEventListening() {
+      this.dialogElement.addEventListener('click', (e) => {
+        if (e.target.tagName == 'DIALOG') {
+          this.close();
+        }
+        return false;
+      });
 
-    $(document).mousemove(function (ev) {
-      if (_move) {
-        var oEvent = ev || window.event;
-        var offset_l = oEvent.clientX - disX;
-        var offset_t = oEvent.clientY - disY;
+      this.closeBtn.addEventListener('click', () => {
+        this.close();
+        return false;
+      });
 
-        if (self.opts.dragLimit) {
-          if (offset_l <= 0) {
-            offset_l = 0;
-          } else if (offset_l >= self.page_w - self.$elem.width()) {
-            offset_l = self.page_w - self.$elem.width();
+      // 拖拽事件
+      this.titleBoxElement.addEventListener('mousedown', (e) => {
+        if (this.options.ifDrag) {
+          let r = this.containerElement.getBoundingClientRect();
+          this.#x = e.clientX - r.left;
+          this.#y = e.clientY - r.top;
+          this.#draging = true;
+        }
+        return false;
+      });
+      document.addEventListener('mousemove', (e) => {
+        if (!this.#draging) return;
+        let x = e.clientX - this.#x;
+        let y = e.clientY - this.#y;
+
+        if (this.options.dragLimit) {
+          if (x <= 0) {
+            x = 0;
+          } else if (x >= window.innerWidth - this.containerElement.clientWidth) {
+            x = window.innerWidth - this.containerElement.clientWidth;
           }
 
-          if (offset_t <= 0) {
-            offset_t = 0;
-          } else if (offset_t >= self.page_h - self.$elem.height()) {
-            offset_t = self.page_h - self.$elem.height();
+          if (y <= 0) {
+            y = 0;
+          } else if (y >= window.innerHeight - this.containerElement.clientHeight) {
+            y = window.innerHeight - this.containerElement.clientHeight;
           }
         }
 
-        self.$elem.css({ left: offset_l, top: offset_t });
+        this.dialogElement.style.left = x;
+        this.dialogElement.style.top = y;
+      })
+      document.addEventListener('mouseup', (e) => {
+        this.#draging = false;
+      })
+    }
+
+    show() {
+      if (this.dialogElement.hasAttribute('open')) return;
+      this.b_stop = true;
+      this.dialogElement.showModal();
+      this.dialogElement.style.left = (window.innerWidth - this.containerElement.clientWidth) / 2;
+      this.dialogElement.style.top = (window.innerHeight - this.containerElement.clientHeight) / 2;
+      if (this.timeout > 0) {
+        this.popup_timer = setTimeout(() => {
+          this.close();
+        }, this.timeout);
       }
-    }).mouseup(function () {
-      _move = false;
-    });
-  },
+    }
 
-  constructor: Popup
-};
-window.Popup = Popup;
-
-$(function () {
-  window.popup = new Popup();
-})
+    close() {
+      if (!this.dialogElement.hasAttribute('open')) return;
+      if (this.b_stop) {
+        clearTimeout(this.popup_timer);
+        this.dialogElement.close();
+        this.b_stop = false;
+      }
+    }
+  }
+  window.Popup = Popup;
+})();

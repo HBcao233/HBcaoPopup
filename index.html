@@ -1,0 +1,142 @@
+<html>
+
+<head>
+  <title>example</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <script src="HBcaoPopup.js"></script>
+  <link rel="stylesheet" href="HBcaoPopup.css">
+
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn {
+      width: 100px;
+      height: 20px;
+      margin: 5px 10px;
+    }
+
+    .popup_title:hover {
+      color: yellow;
+    }
+
+    .popup_close_box:hover {
+      background-color: rgba(15, 20, 25, .1);
+    }
+
+    .popup2_title_box {
+      display: none;
+      width: 100px;
+    }
+  </style>
+</head>
+
+<body>
+  <div style="display: flex;flex-direction: column;">
+    <button class="btn btn1">弹窗1</button>
+    <button class="btn btn2">弹窗2</button>
+  </div>
+
+  <script>
+    let popup1 = new window.Popup({
+      content: '<p>操作成功！</p><p>3秒后自动关闭</p>',
+      timeout: 3000,  // 可选，自动关闭时间，单位ms
+      title: '提示',  // 可选，标题文本
+      ifDrag: true,  // 可选，是否允许拖拽, 默认为true
+      dragLimit: true,  // 可选，是否限制拖拽区域, 默认为true
+
+      popup_style: '', // 可选，弹窗本体的css
+      title_style: 'background-color: green; ',  // 可选，标题样式，设置后title_color, title_bgcolor无效
+      title_box_style: 'color: skyblue',  // 可选，标题框（包括关闭按钮）样式
+      content_style: 'background-color: red; color: blue',  // 可选，内容样式，设置后content_color, content_bgcolor无效
+      close_btn_style: 'width: 30px; height: 30px; border-radius: 50%; border: none;',  // 可选，关闭按钮样式
+      close_svg_style: 'fill: #fff; font-size: 25px',  // 可选，关闭按钮内svg样式
+
+      title_class: 'popup_title',
+      title_box_class: '',
+      content_class: '',
+      close_btn_class: 'popup_close_box',
+    });
+
+    let popup2 = new window.Popup({
+      content: `<div class="title">确定删除？</div>
+        <div class="tip">此操作可在最近删除中撤销。</div>
+        <div class="operation">
+          <div class="btn delete">删除</div>
+          <div class="btn cancel">取消</div>
+        </div>`,
+      title: '提示',
+      style: 'width: fit-content; box-shadow: none; border-radius: 20px; overflow: hidden',
+      title_box_style: 'display: none',
+      content_style: 'background-color: #fff',
+    });
+    let popup3 = new window.Popup({
+      content: '删除成功',
+      title: '提示',
+      style: 'width: fit-content; box-shadow: none; border-radius: 20px; overflow: hidden',
+      content_style: 'background-color: #fff',
+    });
+    popup2.querySelector('.btn.delete').addEventListener('click', () => {
+      popup3.show();
+    })
+    popup2.querySelector('.btn.cancel').addEventListener('click', () => {
+      popup2.close();
+    })
+
+    document.querySelector('.btn1').addEventListener('click', function (e) {
+      popup1.show();
+    });
+
+    document.querySelector('.btn2').addEventListener('click', function (e) {
+      popup2.show();
+    });
+  </script>
+  <style>
+    .popup-content .title {
+      color: rgb(15, 20, 25);
+      font-weight: 700;
+      line-height: 24px;
+      margin-bottom: 8px;
+    }
+
+    .popup-content .tip {
+      color: rgb(83, 100, 113);
+      font-weight: 400;
+      font-size: 15px;
+      line-height: 20px;
+    }
+
+    .popup-content .operation {
+      margin-top: 20px;
+    }
+
+    .popup-content .operation .btn {
+      width: 220px;
+      font-weight: 700;
+      font-size: 15px;
+      line-height: 20px;
+      padding: 10px 0;
+      border-radius: 25px;
+      text-align: center;
+    }
+
+    .popup-content .operation .btn.delete {
+      color: #fff;
+      background-color: rgb(244, 33, 46);
+    }
+
+    .popup-content .operation .btn.cancel {
+      border: 1px solid rgb(207, 217, 222);
+    }
+  </style>
+</body>
+
+</html>
