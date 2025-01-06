@@ -3,6 +3,21 @@
   const isString = s => Object.prototype.toString.call(s) === "[object String]";
   const isArrayLike = s => s != null && typeof s[Symbol.iterator] === 'function';
   /**
+   * 设置 Element innerHTML
+   * @param {HTMLElement} element 
+   * @param {String} html 
+   */
+  const setHTML = (element, html) => {
+    if (!trustedTypes) {
+      element.innerHTML = html;
+      return;
+    }
+    const escapeHTMLPolicy = trustedTypes.createPolicy("forceInner", {
+      createHTML: (to_escape) => to_escape
+    })
+    element.innerHTML = escapeHTMLPolicy.createHTML(html);
+  }
+  /**
    * 创建 Element
    * @param {String} tagName 
    * @param {Object} options 
@@ -25,7 +40,7 @@
         if (e) newElement.classList.add(e);
       }
     }
-    if (options.innerHTML) newElement.innerHTML = options.innerHTML;
+    if (options.innerHTML) setHTML(newElement, options.innerHTML);
     if (options.children) {
       if (!isArrayLike(options.children)) options.children = [options.children];
       for (const e of options.children) {
@@ -77,7 +92,8 @@
                     attrs: {
                       viewBox: '0 0 24 24',
                       'aria-hidden': 'true',
-                    }, innerHTML: '<g><path d="M10.59 12L4.54 5.96l1.42-1.42L12 10.59l6.04-6.05 1.42 1.42L13.41 12l6.05 6.04-1.42 1.42L12 13.41l-6.04 6.05-1.42-1.42L10.59 12z"></path></g>'
+                    },
+                    innerHTML: '<g><path d="M10.59 12L4.54 5.96l1.42-1.42L12 10.59l6.04-6.05 1.42 1.42L13.41 12l6.05 6.04-1.42 1.42L12 13.41l-6.04 6.05-1.42-1.42L10.59 12z"></path></g>'
                   }))
                 })),
               ],
@@ -88,8 +104,22 @@
       });
       document.body.append(this.dialogElement);
 
-      this.titleElement.innerHTML = options.title;
-      this.contentElement.innerHTML = options.content;
+      if (!isArrayLike(options.title)) {
+        setHTML(this.titleElement, options.title);
+      } else {
+        for (let e of options.title) {
+          if (isString(e) || isNumber(e)) e = document.createTextNode(e);
+          this.titleElement.appendChild(e);
+        }
+      }
+      if (!isArrayLike(options.content)) {
+        setHTML(this.contentElement, options.content);
+      } else {
+        for (let e of options.content) {
+          if (isString(e) || isNumber(e)) e = document.createTextNode(e);
+          this.contentElement.appendChild(e);
+        }
+      }
 
       const setStyle = (t, s) => {
         if (!s) return;
