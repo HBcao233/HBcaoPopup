@@ -7,8 +7,8 @@ JavaScript 弹窗
 ## 安装
 
 ```
-<script src="HBcaoPopup.min.js"></script>
-<link rel="stylesheet" href="HBcaoPopup.min.css">
+<link rel="stylesheet" href="https://github.com/HBcao233/HBcaoPopup/releases/download/v1.2.0/HBcaoPopup.min.css">
+<script src="https://github.com/HBcao233/HBcaoPopup/releases/download/v1.2.0/HBcaoPopup.min.js"></script>
 ```
 
 ## 使用
