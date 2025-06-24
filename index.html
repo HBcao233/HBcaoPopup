@@ -50,11 +50,11 @@
     let popup1 = new window.Popup({
       content: '<p>操作成功！</p><p>3秒后自动关闭</p>',
       timeout: 3000,  // 可选，自动关闭时间，单位ms
-      title: '提示',  // 可选，标题文本
+      title: ['提示'],  // 可选，标题文本
       ifDrag: true,  // 可选，是否允许拖拽, 默认为true
       dragLimit: true,  // 可选，是否限制拖拽区域, 默认为true
 
-      popup_style: '', // 可选，弹窗本体的css
+      style: 'width: fit-content;', // 可选，弹窗本体的css
       title_style: 'background-color: green; ',  // 可选，标题样式，设置后title_color, title_bgcolor无效
       title_box_style: 'color: skyblue',  // 可选，标题框（包括关闭按钮）样式
       content_style: 'background-color: red; color: blue',  // 可选，内容样式，设置后content_color, content_bgcolor无效
@@ -81,9 +81,10 @@
     });
     let popup3 = new window.Popup({
       content: '删除成功',
+      timeout: 3000,
       title: '提示',
       style: 'width: fit-content; box-shadow: none; border-radius: 20px; overflow: hidden',
-      content_style: 'background-color: #fff',
+      content_style: 'background-color: #fff; width: fit-content;',
     });
     popup2.querySelector('.btn.delete').addEventListener('click', () => {
       popup3.show();

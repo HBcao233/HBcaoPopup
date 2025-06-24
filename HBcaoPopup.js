@@ -18,6 +18,18 @@
     element.innerHTML = escapeHTMLPolicy.createHTML(html);
   }
   /**
+   * @param {String} HTML representing any number of sibling nodes
+   * @return {NodeList} 
+   */
+  function htmlToNodes(html) {
+    const template = document.createElement('template');
+    template.innerHTML = html;
+    return template.content.childNodes;
+  }
+  function htmlToNode(html) {
+    return htmlToNodes(html)[0]
+  }
+  /**
    * 创建 Element
    * @param {String} tagName 
    * @param {Object} options 
@@ -102,24 +114,17 @@
           ]
         })),
       });
-      document.body.append(this.dialogElement);
-
-      if (!isArrayLike(options.title)) {
-        setHTML(this.titleElement, options.title);
-      } else {
-        for (let e of options.title) {
-          if (isString(e) || isNumber(e)) e = document.createTextNode(e);
-          this.titleElement.appendChild(e);
+      window.addEventListener('load', ()=>{
+        document.body.appendChild(this.dialogElement);
+      })
+      
+      const addHTML = (ele, i) => {
+        for (let node of htmlToNodes(i)) {
+          ele.appendChild(node);
         }
       }
-      if (!isArrayLike(options.content)) {
-        setHTML(this.contentElement, options.content);
-      } else {
-        for (let e of options.content) {
-          if (isString(e) || isNumber(e)) e = document.createTextNode(e);
-          this.contentElement.appendChild(e);
-        }
-      }
+      addHTML(this.titleElement, options.title);
+      addHTML(this.contentElement, options.content);
 
       const setStyle = (t, s) => {
         if (!s) return;
