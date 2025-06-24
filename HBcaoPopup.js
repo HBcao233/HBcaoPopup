@@ -223,5 +223,18 @@
       }
     }
   }
-  window.Popup = Popup;
+  
+  if ("object" == typeof exports && "object"== typeof module) {
+    module.exports = Popup;
+  } else {
+    if ("function" == typeof define && define.amd) {
+      define("Popup", [], Popup)
+    } else {
+      if ("object" == typeof exports) {
+        exports.Popup = Popup;
+      } else {
+        window.Popup = Popup;
+      }
+    }
+  }
 })();

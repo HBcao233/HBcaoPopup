@@ -3,5 +3,5 @@
 # npm install -g uglify-js
 
 make: 
-	uglifyjs HBcaoPopup.js -o HBcaoPopup.min.js
-	cleancss HBcaoPopup.css -o HBcaoPopup.min.css
+	uglifyjs HBcaoPopup.js -o dist/HBcaoPopup.min.js
+	cleancss HBcaoPopup.css -o dist/HBcaoPopup.min.css
