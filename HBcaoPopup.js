@@ -29,6 +29,23 @@
   function htmlToNode(html) {
     return htmlToNodes(html)[0]
   }
+  const addHTML = (ele, i) => {
+    for (let node of htmlToNodes(i)) {
+      ele.appendChild(node);
+    }
+  }
+  const setStyle = (t, s) => {
+    if (!s) return;
+    t.style = s;
+  }
+  const addClass = (t, c) => {
+    if (!c) return;
+    if (isString(c)) c = c.split(' ');
+    for (const e of c) {
+      if (e) t.classList.add(e);
+    }
+  }
+      
   /**
    * 创建 Element
    * @param {String} tagName 
@@ -74,7 +91,25 @@
     #draging = false;
     #x = 0;
     #y = 0;
-
+    default_options = {
+      content: '',
+      timeout: 0,
+      title: '',
+      ifDrag: true,
+      dragLimit: true,
+      style: '',
+      title_style: '',
+      title_box_style: '',
+      content_style: '',
+      close_btn_style: '',
+      close_svg_style: '',
+      class: '',
+      title_class: '',
+      title_box_class: '',
+      content_class: '',
+      close_btn_class: '',
+    }
+    
     /**
      * Popup
      * @param {Object} opt_config
@@ -83,14 +118,33 @@
      */
     constructor(options) {
       if (!options) options = {};
-      if (options.ifDrag === undefined) options.ifDrag = true;
-      if (options.dragLimit === undefined) options.dragLimit = true;
-      this.options = options;
-
+      let _options = this.default_options;
+      Object.assign(_options, options);
+      this.options = _options;
 
       this.b_stop = true; // 防止重复点击
       this.timeout = options.timeout;
-
+      this.init();
+    }
+    
+    get content() {
+      return this.options.content;
+    }
+    set content(c) {
+      this.options.content = c;
+      addHTML(this.contentElement, this.options.content);
+    }
+    
+    get title() {
+      return this.options.title;
+    }
+    set title(c) {
+      this.options.title = c;
+      addHTML(this.titleElement, this.options.title);
+    }
+    
+    init() {
+      const options = this.options;
       this.dialogElement = tag('dialog', {
         class: 'popup-box',
         children: (this.containerElement = tag('div', {
@@ -118,18 +172,9 @@
         document.body.appendChild(this.dialogElement);
       })
       
-      const addHTML = (ele, i) => {
-        for (let node of htmlToNodes(i)) {
-          ele.appendChild(node);
-        }
-      }
       addHTML(this.titleElement, options.title);
       addHTML(this.contentElement, options.content);
 
-      const setStyle = (t, s) => {
-        if (!s) return;
-        t.style = s;
-      }
       setStyle(this.containerElement, options.style);
       setStyle(this.titleBoxElement, options.title_box_style);
       setStyle(this.titleElement, options.title_style);
@@ -137,13 +182,6 @@
       setStyle(this.closeBtn, options.close_btn_style);
       setStyle(this.closeBtnSvg, options.close_svg_style);
 
-      const addClass = (t, c) => {
-        if (!c) return;
-        if (isString(c)) c = c.split(' ');
-        for (const e of c) {
-          if (e) t.classList.add(e);
-        }
-      }
       addClass(this.containerElement, options.class);
       addClass(this.titleBoxElement, options.title_box_class);
       addClass(this.titleElement, options.title_class);
